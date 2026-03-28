@@ -55,6 +55,19 @@ const PORT = process.env.PORT || 4000;
   try {
     await sequelize.sync({ alter: false });
     console.log('✅ SQLite DB synced');
+
+    // Auto-seed admin if not present (critical for Railway/Render ephemeral FS)
+    const { User } = require('./models');
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@nanaraff.com';
+    const adminPass  = process.env.ADMIN_PASSWORD || 'Admin@2024!';
+    const existing   = await User.findOne({ where: { email: adminEmail } });
+    if (!existing) {
+      await User.create({ name: 'Admin NANA RAFF', email: adminEmail, password: adminPass, role: 'admin' });
+      console.log(`✅ Admin créé : ${adminEmail}`);
+    } else {
+      console.log(`ℹ️  Admin déjà présent : ${adminEmail}`);
+    }
+
     app.listen(PORT, '0.0.0.0', () => console.log(`🚀 NANA RAFF running on port ${PORT}`));
   } catch (err) {
     console.error('❌ DB sync error:', err);
