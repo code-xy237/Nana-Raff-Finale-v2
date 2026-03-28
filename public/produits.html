@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANA RAFF – Catalogue Produits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    .page-hero { background: linear-gradient(135deg, #1a3a2a 0%, #2c3e50 100%); color: #fff; padding: 48px 0; }
+    .page-hero h1 { margin-bottom: 8px; }
+    .page-hero p { opacity: .75; }
+    .shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; padding: 32px 0; }
+    @media (max-width: 900px) { .shop-layout { grid-template-columns: 1fr; } .sidebar-filter { display: none; } .mobile-filter-btn { display: flex !important; } }
+    .sidebar-filter { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); position: sticky; top: 80px; height: fit-content; }
+    .filter-section { margin-bottom: 24px; }
+    .filter-section h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 12px; }
+    .filter-option { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background .15s; }
+    .filter-option:hover { background: var(--bg); }
+    .filter-option input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+    .price-inputs { display: flex; gap: 8px; align-items: center; }
+    .price-input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; }
+    .shop-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-box { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; flex: 1; min-width: 200px; }
+    .search-box input { border: none; outline: none; background: none; flex: 1; font-size: 15px; }
+    .sort-select { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; background: var(--card); cursor: pointer; min-width: 160px; }
+    .results-count { font-size: 14px; color: var(--muted); white-space: nowrap; }
+    .mobile-filter-btn { display: none; }
+
+    /* Product detail modal */
+    .product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 600px) { .product-detail { grid-template-columns: 1fr; } }
+    .product-detail-img { border-radius: 12px; overflow: hidden; aspect-ratio: 1; background: var(--bg); }
+    .product-detail-img img { width: 100%; height: 100%; object-fit: cover; }
+    .stars-input { display: flex; gap: 4px; font-size: 28px; cursor: pointer; }
+    .star-btn { background: none; border: none; color: #d1d5db; font-size: 28px; cursor: pointer; transition: color .1s; }
+    .star-btn.active, .star-btn:hover { color: #f39c12; }
+
+    /* Pagination */
+    .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+    .page-btn { padding: 8px 14px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--card); cursor: pointer; font-weight: 600; font-size: 14px; transition: all .15s; }
+    .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Review card */
+    .review-card { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+    .review-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .review-author { font-weight: 700; font-size: 14px; }
+    .review-date { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-brand">
+      <img src="/image/logo_1.jpeg" alt="Logo" onerror="this.style.display='none'"/>
+      NANA RAFF
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="/">Accueil</a>
+      <a href="/produits.html" class="active">Produits</a>
+      <a href="/services.html">Services</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/admin.html" id="nav-admin-link">Admin</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <button class="cart-btn" id="cart-open-btn">🛒 <span class="cart-count" style="display:none">0</span></button>
+      <a href="/login.html" id="nav-login" class="btn btn-primary btn-sm">Connexion</a>
+      <div id="nav-user-menu" class="hidden" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-weight:600;font-size:14px;" id="nav-user-name"></span>
+        <button class="btn btn-ghost btn-sm" data-logout>Déconnexion</button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+    <h1>Nos Produits</h1>
+    <p>Découvrez notre sélection de produits naturels pour votre santé et beauté</p>
+  </div>
+</div>
+
+<!-- MAIN SHOP -->
+<div class="container">
+  <div class="shop-layout">
+
+    <!-- SIDEBAR FILTERS -->
+    <aside class="sidebar-filter">
+      <h3 style="margin-bottom:20px;">Filtres</h3>
+
+      <div class="filter-section">
+        <h4>Catégorie</h4>
+        <div class="filter-option"><input type="checkbox" class="cat-check" value="thé"/> <span>🍵 Thés & Infusions</span></div>
+        <div class="filter-option"><input type="checkbox" class="cat-check" value="compléments"/> <span>💊 Compléments</span></div>
+        <div class="filter-option"><input type="checkbox" class="cat-check" value="beauté"/> <span>✨ Beauté</span></div>
+        <div class="filter-option"><input type="checkbox" class="cat-check" value="nutrition"/> <span>🥗 Nutrition</span></div>
+        <div class="filter-option"><input type="checkbox" class="cat-check" value="accessoires"/> <span>🏃 Accessoires</span></div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Prix (FCFA)</h4>
+        <div class="price-inputs">
+          <input type="number" class="price-input" id="price-min" placeholder="Min" min="0"/>
+          <span style="color:var(--muted)">–</span>
+          <input type="number" class="price-input" id="price-max" placeholder="Max" min="0"/>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Disponibilité</h4>
+        <div class="filter-option"><input type="checkbox" id="in-stock-check"/> <span>En stock uniquement</span></div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="apply-filters">Appliquer</button>
+      <button class="btn btn-ghost btn-full mt-8" id="reset-filters">Réinitialiser</button>
+    </aside>
+
+    <!-- PRODUCTS -->
+    <div>
+      <div class="shop-toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-input" placeholder="Rechercher un produit…"/>
+        </div>
+        <button class="btn btn-ghost btn-sm mobile-filter-btn" id="mobile-filter-btn">⚙️ Filtres</button>
+        <select class="sort-select" id="sort-select">
+          <option value="">Trier par</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="name">Nom A–Z</option>
+          <option value="featured">En vedette</option>
+        </select>
+        <div class="results-count" id="results-count"></div>
+      </div>
+
+      <div id="products-grid" class="grid grid-3">
+        <div class="page-loading" style="grid-column:1/-1">
+          <div style="font-size:36px;">⏳</div><div>Chargement…</div>
+        </div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h3>Mon panier (<span id="cart-item-count">0</span>)</h3>
+    <button id="cart-close-btn" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total</span><span id="cart-total-price">0 FCFA</span></div>
+    <a href="/" class="btn btn-primary btn-full btn-lg" id="goto-checkout-btn">Passer commande →</a>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal" style="max-width:780px;">
+    <div class="modal-header">
+      <h3 id="modal-product-name">Produit</h3>
+      <button class="modal-close" onclick="closeModal('product-modal')">✕</button>
+    </div>
+    <div class="product-detail">
+      <div class="product-detail-img">
+        <img id="modal-img" src="" alt=""/>
+      </div>
+      <div>
+        <div id="modal-cat" class="badge badge-success mb-8"></div>
+        <div id="modal-price" style="font-size:26px;font-weight:800;color:var(--primary);margin-bottom:8px;"></div>
+        <div id="modal-stock" style="font-size:13px;margin-bottom:12px;"></div>
+        <p id="modal-desc" style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px;"></p>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;">
+          <button onclick="changeQty(-1)" class="btn btn-ghost" style="padding:8px 16px;font-size:18px;">−</button>
+          <span id="modal-qty" style="font-weight:800;font-size:18px;width:32px;text-align:center;">1</span>
+          <button onclick="changeQty(1)" class="btn btn-ghost" style="padding:8px 16px;font-size:18px;">+</button>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" id="modal-add-cart">Ajouter au panier</button>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:20px;">
+      <h4 style="margin-bottom:16px;">Avis clients</h4>
+      <div id="modal-reviews"><div class="text-muted" style="font-size:14px;">Chargement des avis…</div></div>
+
+      <div style="margin-top:20px;background:var(--bg);border-radius:12px;padding:16px;">
+        <h5 style="margin-bottom:12px;">Laisser un avis</h5>
+        <div style="margin-bottom:12px;">
+          <div class="stars-input" id="rating-stars">
+            <button class="star-btn" data-v="1">★</button>
+            <button class="star-btn" data-v="2">★</button>
+            <button class="star-btn" data-v="3">★</button>
+            <button class="star-btn" data-v="4">★</button>
+            <button class="star-btn" data-v="5">★</button>
+          </div>
+        </div>
+        <input type="text" class="form-control mb-8" id="review-name" placeholder="Votre prénom (optionnel)"/>
+        <textarea class="form-control mb-8" id="review-comment" rows="3" placeholder="Votre avis sur ce produit…"></textarea>
+        <button class="btn btn-primary" id="submit-review-btn">Publier l'avis</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script>
+let allProducts = [];
+let currentProduct = null;
+let currentQty = 1;
+let selectedRating = 0;
+const PAGE_SIZE = 12;
+let currentPage = 1;
+
+async function loadAllProducts() {
+  try {
+    allProducts = await apiFetch('/products');
+    renderProducts();
+  } catch (e) {
+    document.getElementById('products-grid').innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="icon">⚠️</div><p>Impossible de charger les produits</p></div>';
+  }
+}
+
+function getFiltered() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const cats = [...document.querySelectorAll('.cat-check:checked')].map(c => c.value);
+  const minP = parseInt(document.getElementById('price-min').value) || 0;
+  const maxP = parseInt(document.getElementById('price-max').value) || Infinity;
+  const inStock = document.getElementById('in-stock-check').checked;
+  const sort = document.getElementById('sort-select').value;
+
+  let list = allProducts.filter(p => {
+    if (q && !p.name.toLowerCase().includes(q) && !(p.short||'').toLowerCase().includes(q)) return false;
+    if (cats.length && !cats.includes(p.category)) return false;
+    if (p.price < minP || p.price > maxP) return false;
+    if (inStock && p.stock === 0) return false;
+    return true;
+  });
+
+  if (sort === 'price-asc') list.sort((a,b) => a.price - b.price);
+  else if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+  else if (sort === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'featured') list.sort((a,b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  return list;
+}
+
+function renderProducts() {
+  const list = getFiltered();
+  const total = list.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const paged = list.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  document.getElementById('results-count').textContent = `${total} produit${total > 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('products-grid');
+  if (!paged.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="icon">🔍</div><p>Aucun produit trouvé</p><button class="btn btn-ghost mt-8" onclick="resetFilters()">Effacer les filtres</button></div>';
+  } else {
+    grid.innerHTML = paged.map(p => `
+      <div class="product-card" onclick="openProduct(${p.id})" style="cursor:pointer;">
+        <div class="product-card-img">
+          <img src="${p.images?.[0] || 'https://via.placeholder.com/400x300?text=Produit'}" alt="${p.name}" loading="lazy"/>
+          ${p.featured ? '<div style="position:absolute;top:10px;left:10px;background:var(--accent);color:#fff;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;">⭐ TOP</div>' : ''}
+          ${p.stock === 0 ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;">Rupture de stock</div>' : ''}
+        </div>
+        <div class="product-card-body">
+          <div class="product-card-cat">${p.category || ''}</div>
+          <div class="product-card-name">${p.name}</div>
+          <div class="product-card-short">${p.short || ''}</div>
+          <div class="product-card-footer">
+            <div>
+              <div class="product-price">${formatPrice(p.price)}</div>
+              <div style="font-size:12px;color:var(--muted);">${p.stock > 0 ? p.stock + ' en stock' : ''}</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();quickAdd(${p.id})" ${p.stock===0?'disabled':''}>+ Panier</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    // Fix relative positioning for badges
+    grid.querySelectorAll('.product-card-img').forEach(el => el.style.position = 'relative');
+  }
+
+  // Pagination
+  const pagEl = document.getElementById('pagination');
+  if (pages <= 1) { pagEl.innerHTML = ''; return; }
+  pagEl.innerHTML = Array.from({length: pages}, (_, i) => i + 1).map(n =>
+    `<button class="page-btn ${n===currentPage?'active':''}" onclick="goPage(${n})">${n}</button>`
+  ).join('');
+}
+
+function goPage(n) { currentPage = n; renderProducts(); window.scrollTo({top: 200, behavior: 'smooth'}); }
+
+function quickAdd(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (p) { Cart.add(p); renderCart(); }
+}
+
+async function openProduct(id) {
+  currentProduct = allProducts.find(x => x.id === id);
+  if (!currentProduct) return;
+  currentQty = 1;
+  document.getElementById('modal-product-name').textContent = currentProduct.name;
+  document.getElementById('modal-img').src = currentProduct.images?.[0] || 'https://via.placeholder.com/400?text=Produit';
+  document.getElementById('modal-cat').textContent = currentProduct.category || '';
+  document.getElementById('modal-price').textContent = formatPrice(currentProduct.price);
+  document.getElementById('modal-stock').innerHTML = currentProduct.stock > 0
+    ? `<span style="color:var(--success);">✅ En stock (${currentProduct.stock} disponibles)</span>`
+    : `<span style="color:var(--danger);">❌ Rupture de stock</span>`;
+  document.getElementById('modal-desc').textContent = currentProduct.description || currentProduct.short || '';
+  document.getElementById('modal-qty').textContent = currentQty;
+  document.getElementById('modal-add-cart').disabled = currentProduct.stock === 0;
+  openModal('product-modal');
+  loadReviews(id);
+}
+
+function changeQty(d) {
+  currentQty = Math.max(1, Math.min(currentProduct.stock, currentQty + d));
+  document.getElementById('modal-qty').textContent = currentQty;
+}
+
+document.getElementById('modal-add-cart')?.addEventListener('click', () => {
+  if (currentProduct) { Cart.add(currentProduct, currentQty); renderCart(); closeModal('product-modal'); }
+});
+
+async function loadReviews(pid) {
+  const el = document.getElementById('modal-reviews');
+  try {
+    const reviews = await apiFetch(`/reviews/${pid}`);
+    if (!reviews.length) { el.innerHTML = '<p style="font-size:14px;color:var(--muted);">Aucun avis pour ce produit. Soyez le premier !</p>'; return; }
+    el.innerHTML = reviews.map(r => `
+      <div class="review-card">
+        <div class="review-meta">
+          <div class="review-author">${r.name || 'Anonyme'} <span style="color:#f39c12;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+          <div class="review-date">${formatDate(r.createdAt)}</div>
+        </div>
+        <p style="font-size:14px;">${r.comment || ''}</p>
+        <button onclick="likeReview(${r.id},this)" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;margin-top:6px;">👍 ${r.likes}</button>
+      </div>
+    `).join('');
+  } catch { el.innerHTML = '<p style="color:var(--muted);font-size:14px;">Impossible de charger les avis.</p>'; }
+}
+
+async function likeReview(id, btn) {
+  try {
+    const r = await apiFetch(`/reviews/${id}/like`, { method: 'PATCH' });
+    btn.textContent = `👍 ${r.likes}`;
+    btn.disabled = true;
+  } catch {}
+}
+
+// Rating stars
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedRating = parseInt(btn.dataset.v);
+    document.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('active', i < selectedRating));
+  });
+});
+
+document.getElementById('submit-review-btn')?.addEventListener('click', async () => {
+  if (!currentProduct) return;
+  if (!selectedRating) { toast('Veuillez sélectionner une note', 'error'); return; }
+  const btn = document.getElementById('submit-review-btn');
+  btn.disabled = true; btn.textContent = 'Publication…';
+  try {
+    await apiFetch(`/reviews/${currentProduct.id}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        rating: selectedRating,
+        comment: document.getElementById('review-comment').value,
+        name: document.getElementById('review-name').value || undefined
+      })
+    });
+    toast('Avis publié ! Merci 🙏', 'success');
+    document.getElementById('review-comment').value = '';
+    document.getElementById('review-name').value = '';
+    selectedRating = 0;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+    loadReviews(currentProduct.id);
+  } catch (e) { toast(e.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Publier l\'avis'; }
+});
+
+function renderCart() {
+  const cart = Cart.get();
+  document.getElementById('cart-item-count').textContent = Cart.count();
+  document.getElementById('cart-total-price').textContent = formatPrice(Cart.total());
+  const list = document.getElementById('cart-items-list');
+  if (!cart.length) { list.innerHTML = '<div class="empty"><div class="icon">🛒</div><p>Panier vide</p></div>'; return; }
+  list.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${item.image || 'https://via.placeholder.com/70?text=+'}" alt="${item.name}"/>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${formatPrice(item.price)}</div>
+        <div class="cart-qty">
+          <button onclick="Cart.setQty(${item.productId},${item.qty-1});renderCart()">−</button>
+          <span>${item.qty}</span>
+          <button onclick="Cart.setQty(${item.productId},${item.qty+1});renderCart()">+</button>
+          <button onclick="Cart.remove(${item.productId});renderCart()" style="margin-left:auto;background:none;border:none;color:var(--danger);font-size:16px;">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Cart open/close
+document.getElementById('cart-open-btn')?.addEventListener('click', () => { renderCart(); document.getElementById('cart-drawer').classList.add('open'); document.getElementById('cart-overlay').classList.add('open'); });
+document.getElementById('cart-close-btn')?.addEventListener('click', () => { document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').classList.remove('open'); });
+document.getElementById('cart-overlay')?.addEventListener('click', () => { document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').classList.remove('open'); });
+
+// Filters
+document.getElementById('apply-filters')?.addEventListener('click', () => { currentPage = 1; renderProducts(); });
+document.getElementById('sort-select')?.addEventListener('change', () => { currentPage = 1; renderProducts(); });
+let searchTimer;
+document.getElementById('search-input')?.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { currentPage = 1; renderProducts(); }, 300); });
+
+function resetFilters() {
+  document.querySelectorAll('.cat-check').forEach(c => c.checked = false);
+  document.getElementById('price-min').value = '';
+  document.getElementById('price-max').value = '';
+  document.getElementById('in-stock-check').checked = false;
+  document.getElementById('search-input').value = '';
+  document.getElementById('sort-select').value = '';
+  currentPage = 1;
+  renderProducts();
+}
+document.getElementById('reset-filters')?.addEventListener('click', resetFilters);
+
+loadAllProducts();
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANA RAFF – Services & Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    .page-hero { background: linear-gradient(135deg, #1a3a2a 0%, #2c3e50 100%); color: #fff; padding: 60px 0; text-align: center; }
+    .service-card { background: var(--card); border-radius: 16px; padding: 32px; box-shadow: var(--shadow); text-align: center; transition: all .3s; }
+    .service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .service-icon { font-size: 48px; margin-bottom: 16px; }
+    .service-card h3 { margin-bottom: 10px; }
+    .service-card p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .pricing-card { background: var(--card); border-radius: 16px; padding: 32px; box-shadow: var(--shadow); border: 2px solid transparent; }
+    .pricing-card.featured { border-color: var(--primary); position: relative; }
+    .pricing-card .popular { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 4px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .pricing-card .price { font-size: 2.4rem; font-weight: 800; color: var(--primary); margin: 16px 0 4px; }
+    .pricing-card ul { list-style: none; margin: 16px 0 24px; }
+    .pricing-card ul li { padding: 7px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+    .pricing-card ul li::before { content: '✅ '; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-brand"><img src="/image/logo_1.jpeg" alt="Logo" onerror="this.style.display='none'"/> NANA RAFF</a>
+    <div class="nav-links" id="nav-links"><a href="/">Accueil</a><a href="/produits.html">Produits</a><a href="/services.html" class="active">Services</a><a href="/contact.html">Contact</a><a href="/admin.html" id="nav-admin-link">Admin</a></div>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <a href="/login.html" id="nav-login" class="btn btn-primary btn-sm">Connexion</a>
+      <div id="nav-user-menu" class="hidden" style="display:flex;align-items:center;gap:8px;"><span id="nav-user-name" style="font-weight:600;font-size:14px;"></span><button class="btn btn-ghost btn-sm" data-logout>Déconnexion</button></div>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Nos Services</h1>
+    <p style="opacity:.75;margin-top:8px;">Coaching, conseils nutritionnels et accompagnement personnalisé</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-24">
+      <div class="section-title">Ce que nous offrons</div>
+      <div class="section-sub">Un accompagnement complet pour votre bien-être</div>
+    </div>
+    <div class="grid grid-3">
+      <div class="service-card"><div class="service-icon">🏃‍♀️</div><h3>Coaching Minceur</h3><p>Programme personnalisé sur 30 jours avec suivi hebdomadaire et ajustements selon vos objectifs.</p><a href="/contact.html" class="btn btn-primary btn-sm mt-16">En savoir plus</a></div>
+      <div class="service-card"><div class="service-icon">🥗</div><h3>Conseils Nutrition</h3><p>Bilan nutritionnel complet et plan alimentaire adapté à votre mode de vie et vos goûts.</p><a href="/contact.html" class="btn btn-primary btn-sm mt-16">En savoir plus</a></div>
+      <div class="service-card"><div class="service-icon">💆</div><h3>Bien-être Holistique</h3><p>Approche globale : nutrition, mouvement, sommeil et gestion du stress pour une santé optimale.</p><a href="/contact.html" class="btn btn-primary btn-sm mt-16">En savoir plus</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:#f8fdf9;">
+  <div class="container">
+    <div class="text-center mb-24">
+      <div class="section-title">Nos Offres</div>
+      <div class="section-sub">Choisissez le programme qui vous convient</div>
+    </div>
+    <div class="grid grid-3">
+      <div class="pricing-card">
+        <h3>Starter</h3>
+        <div class="price">15 000 <span style="font-size:1rem;font-weight:400;color:var(--muted);">FCFA</span></div>
+        <div style="color:var(--muted);font-size:13px;">/ mois</div>
+        <ul><li>Accès aux produits premium</li><li>Guide nutritionnel PDF</li><li>Support par WhatsApp</li></ul>
+        <a href="/contact.html" class="btn btn-outline btn-full">Choisir</a>
+      </div>
+      <div class="pricing-card featured" style="position:relative;">
+        <span class="popular">⭐ Populaire</span>
+        <h3>Pro</h3>
+        <div class="price">35 000 <span style="font-size:1rem;font-weight:400;color:var(--muted);">FCFA</span></div>
+        <div style="color:var(--muted);font-size:13px;">/ mois</div>
+        <ul><li>Tout du Starter</li><li>Coaching hebdomadaire (4 sessions)</li><li>Plan alimentaire personnalisé</li><li>Suivi des progrès</li></ul>
+        <a href="/contact.html" class="btn btn-primary btn-full">Choisir</a>
+      </div>
+      <div class="pricing-card">
+        <h3>Elite</h3>
+        <div class="price">65 000 <span style="font-size:1rem;font-weight:400;color:var(--muted);">FCFA</span></div>
+        <div style="color:var(--muted);font-size:13px;">/ mois</div>
+        <ul><li>Tout du Pro</li><li>Coaching illimité</li><li>Produits inclus</li><li>Accès VIP communauté</li></ul>
+        <a href="/contact.html" class="btn btn-secondary btn-full">Choisir</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">© 2024 NANA RAFF – Tous droits réservés | <a href="/">Accueil</a> · <a href="/produits.html">Produits</a> · <a href="/contact.html">Contact</a></div>
+  </div>
+</footer>
+<script src="/app.js"></script>
+</body>
+</html>

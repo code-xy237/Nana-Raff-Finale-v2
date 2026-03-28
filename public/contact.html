@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANA RAFF – Contact</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    .page-hero { background: linear-gradient(135deg, #1a3a2a 0%, #2c3e50 100%); color: #fff; padding: 60px 0; text-align: center; }
+    .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 48px 0; }
+    @media (max-width: 768px) { .contact-layout { grid-template-columns: 1fr; } }
+    .contact-info-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+    .contact-icon { width: 46px; height: 46px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .contact-form-card { background: #fff; border-radius: 16px; padding: 32px; box-shadow: var(--shadow); }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-brand"><img src="/image/logo_1.jpeg" alt="Logo" onerror="this.style.display='none'"/> NANA RAFF</a>
+    <div class="nav-links" id="nav-links"><a href="/">Accueil</a><a href="/produits.html">Produits</a><a href="/services.html">Services</a><a href="/contact.html" class="active">Contact</a><a href="/admin.html" id="nav-admin-link">Admin</a></div>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <a href="/login.html" id="nav-login" class="btn btn-primary btn-sm">Connexion</a>
+      <div id="nav-user-menu" class="hidden" style="display:flex;align-items:center;gap:8px;"><span id="nav-user-name" style="font-weight:600;font-size:14px;"></span><button class="btn btn-ghost btn-sm" data-logout>Déconnexion</button></div>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Nous Contacter</h1>
+    <p style="opacity:.75;margin-top:8px;">Notre équipe vous répond sous 24h</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="contact-layout">
+    <div>
+      <h2 style="margin-bottom:24px;">Restons en contact</h2>
+      <div class="contact-info-item">
+        <div class="contact-icon">📍</div>
+        <div><strong>Adresse</strong><br/><span style="color:var(--muted);">Douala, Cameroun</span></div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">📞</div>
+        <div><strong>Téléphone</strong><br/><a href="tel:+237600000000" style="color:var(--primary);">+237 6XX XXX XXX</a></div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">📧</div>
+        <div><strong>Email</strong><br/><a href="mailto:contact@nanaraff.com" style="color:var(--primary);">contact@nanaraff.com</a></div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">⏰</div>
+        <div><strong>Heures d'ouverture</strong><br/><span style="color:var(--muted);">Lun–Sam : 8h–20h<br/>Dimanche : 10h–18h</span></div>
+      </div>
+      <div style="margin-top:32px;">
+        <h4 style="margin-bottom:12px;">Suivez-nous</h4>
+        <div style="display:flex;gap:10px;">
+          <a href="#" class="btn btn-ghost btn-sm">📘 Facebook</a>
+          <a href="#" class="btn btn-ghost btn-sm">📸 Instagram</a>
+          <a href="#" class="btn btn-ghost btn-sm">💬 WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form-card">
+      <h3 style="margin-bottom:20px;">Envoyez-nous un message</h3>
+      <div id="contact-success" class="alert alert-success hidden">✅ Message envoyé ! Nous vous répondrons bientôt.</div>
+      <div id="contact-error" class="alert alert-error hidden"></div>
+      <div class="form-group"><label>Nom complet*</label><input type="text" class="form-control" id="c-name" placeholder="Votre nom"/></div>
+      <div class="form-group"><label>Email*</label><input type="email" class="form-control" id="c-email" placeholder="votre@email.com"/></div>
+      <div class="form-group"><label>Sujet</label>
+        <select class="form-control" id="c-subject">
+          <option>Renseignement produit</option>
+          <option>Commande en cours</option>
+          <option>Coaching & services</option>
+          <option>Partenariat</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Message*</label><textarea class="form-control" id="c-message" rows="5" placeholder="Décrivez votre demande…"></textarea></div>
+      <button class="btn btn-primary btn-full btn-lg" id="send-contact-btn">Envoyer le message</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">© 2024 NANA RAFF – Tous droits réservés</div>
+  </div>
+</footer>
+<script src="/app.js"></script>
+<script>
+document.getElementById('send-contact-btn').addEventListener('click', () => {
+  const name = document.getElementById('c-name').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const message = document.getElementById('c-message').value.trim();
+  const errEl = document.getElementById('contact-error');
+  if (!name || !email || !message) { errEl.textContent = 'Veuillez remplir tous les champs obligatoires.'; errEl.classList.remove('hidden'); return; }
+  errEl.classList.add('hidden');
+  // Show success (demo - no real email backend)
+  document.getElementById('contact-success').classList.remove('hidden');
+  document.getElementById('c-name').value = '';
+  document.getElementById('c-email').value = '';
+  document.getElementById('c-message').value = '';
+  setTimeout(() => document.getElementById('contact-success').classList.add('hidden'), 5000);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANA RAFF – Connexion & Inscription</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #1a3a2a 0%, #2c3e50 100%); }
+    .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .auth-box { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.3); display: flex; width: 100%; max-width: 900px; min-height: 560px; }
+    .auth-side { width: 380px; flex-shrink: 0; background: linear-gradient(160deg, var(--primary) 0%, #1a3a2a 100%); color: #fff; padding: 48px 36px; display: flex; flex-direction: column; justify-content: center; }
+    .auth-side h2 { font-size: 2rem; margin-bottom: 12px; }
+    .auth-side p { opacity: .8; line-height: 1.7; margin-bottom: 28px; }
+    .auth-side .perks { display: flex; flex-direction: column; gap: 14px; }
+    .auth-side .perk { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .auth-side .perk-icon { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .auth-main { flex: 1; padding: 48px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .auth-tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; margin-bottom: 32px; }
+    .auth-tab { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 700; font-size: 15px; background: transparent; color: var(--muted); transition: all .2s; cursor: pointer; }
+    .auth-tab.active { background: #fff; color: var(--primary); box-shadow: var(--shadow); }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    .auth-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 22px; color: var(--primary); margin-bottom: 28px; }
+    .auth-logo img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+    @media (max-width: 700px) {
+      .auth-side { display: none; }
+      .auth-main { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-box">
+    <!-- Side Panel -->
+    <div class="auth-side">
+      <div style="font-size:36px;margin-bottom:20px;">🌿</div>
+      <h2>Bienvenue sur NANA RAFF</h2>
+      <p>Rejoignez notre communauté bien-être et profitez d'offres exclusives.</p>
+      <div class="perks">
+        <div class="perk"><div class="perk-icon">✅</div><span>Produits bio certifiés</span></div>
+        <div class="perk"><div class="perk-icon">🚚</div><span>Livraison Douala & Yaoundé</span></div>
+        <div class="perk"><div class="perk-icon">💳</div><span>Paiement Mobile Money</span></div>
+        <div class="perk"><div class="perk-icon">🎁</div><span>10% de réduction à l'inscription</span></div>
+      </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="auth-main">
+      <div class="auth-logo">
+        <img src="/image/logo_1.jpeg" alt="Logo" onerror="this.style.display='none'"/>
+        NANA RAFF
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Inscription</button>
+      </div>
+
+      <!-- Login Form -->
+      <div class="auth-form active" id="form-login">
+        <div id="login-error" class="alert alert-error hidden"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" class="form-control" id="login-email" placeholder="votre@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" class="form-control" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg mt-8" id="login-btn">Se connecter</button>
+        <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">
+          Pas encore de compte ? <span style="color:var(--primary);cursor:pointer;font-weight:600;" onclick="switchTab('register')">Créer un compte</span>
+        </div>
+        <div style="text-align:center;margin-top:12px;">
+          <span style="font-size:12px;color:var(--muted);">Accès admin demo : admin@nanaraff.com / Admin@2024!</span>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div class="auth-form" id="form-register">
+        <div id="register-error" class="alert alert-error hidden"></div>
+        <div class="form-group">
+          <label>Nom complet</label>
+          <input type="text" class="form-control" id="reg-name" placeholder="Votre nom complet" autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" class="form-control" id="reg-email" placeholder="votre@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input type="tel" class="form-control" id="reg-phone" placeholder="+237 6XX XXX XXX" autocomplete="tel"/>
+        </div>
+        <div class="form-group">
+          <label>Mot de passe <span style="color:var(--muted);font-size:12px;">(min. 6 caractères)</span></label>
+          <input type="password" class="form-control" id="reg-pass" placeholder="••••••••" autocomplete="new-password"/>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg mt-8" id="register-btn">Créer mon compte</button>
+        <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">
+          Déjà inscrit ? <span style="color:var(--primary);cursor:pointer;font-weight:600;" onclick="switchTab('login')">Se connecter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script>
+  // Redirect if already logged in
+  if (Auth.isLoggedIn()) {
+    window.location.href = Auth.isAdmin() ? '/admin.html' : '/';
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('form-' + tab).classList.add('active');
+  }
+
+  // Login
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('login-error');
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-pass').value;
+    if (!email || !password) { errEl.textContent = 'Veuillez remplir tous les champs.'; errEl.classList.remove('hidden'); return; }
+    errEl.classList.add('hidden');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Connexion…';
+    try {
+      const { user, token } = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      Auth.save(user, token);
+      window.location.href = user.role === 'admin' ? '/admin.html' : '/';
+    } catch (e) {
+      errEl.textContent = e.message;
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Se connecter';
+    }
+  });
+
+  // Enter key login
+  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+
+  // Register
+  document.getElementById('register-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('register-btn');
+    const errEl = document.getElementById('register-error');
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-pass').value;
+    if (!name || !email || !password) { errEl.textContent = 'Veuillez remplir tous les champs obligatoires.'; errEl.classList.remove('hidden'); return; }
+    if (password.length < 6) { errEl.textContent = 'Le mot de passe doit contenir au moins 6 caractères.'; errEl.classList.remove('hidden'); return; }
+    errEl.classList.add('hidden');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Création…';
+    try {
+      const { user, token } = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, phone, password }) });
+      Auth.save(user, token);
+      window.location.href = '/';
+    } catch (e) {
+      errEl.textContent = e.message;
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Créer mon compte';
+    }
+  });
+</script>
+</body>
+</html>

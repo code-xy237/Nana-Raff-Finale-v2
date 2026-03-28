@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANA RAFF – Santé & Beauté</title>
+  <meta name="description" content="Boutique santé, minceur et beauté naturelle. Produits bio de qualité livraison Cameroun."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    /* Hero */
+    .hero { background: linear-gradient(135deg, #1a3a2a 0%, #2c3e50 100%); color: #fff; padding: 80px 0 60px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1600') center/cover; opacity: .15; }
+    .hero-content { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+    .hero-badge { display: inline-block; background: rgba(39,174,96,.3); color: #6ee7b7; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-bottom: 16px; border: 1px solid rgba(39,174,96,.4); }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.2; margin-bottom: 16px; }
+    .hero p { opacity: .8; margin-bottom: 28px; font-size: 1.1rem; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 24px; margin-top: 32px; }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--success); }
+    .hero-stat .lbl { font-size: 12px; opacity: .7; }
+    .hero-visual { display: flex; justify-content: center; align-items: center; }
+    .hero-img-wrap { width: 340px; height: 340px; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+    .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    @media (max-width: 768px) { .hero-content { grid-template-columns: 1fr; text-align: center; } .hero-visual { display: none; } .hero-btns { justify-content: center; } .hero-stats { justify-content: center; } }
+
+    /* Categories strip */
+    .cats { display: flex; gap: 10px; overflow-x: auto; padding: 24px 0; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cat-pill { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 20px; border-radius: 14px; background: var(--card); border: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all .2s; box-shadow: var(--shadow); min-width: 90px; font-weight: 600; font-size: 13px; }
+    .cat-pill:hover, .cat-pill.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+    .cat-pill .cat-icon { font-size: 24px; }
+
+    /* Featured banner */
+    .promo-banner { background: linear-gradient(135deg, var(--primary) 0%, #1e8449 100%); color: #fff; padding: 20px; border-radius: var(--radius); display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+    .promo-banner .tag { background: rgba(255,255,255,.25); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 64px 20px; color: var(--muted); }
+    .empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* Featured section */
+    .featured-badge { background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; margin-bottom: 6px; display: inline-block; }
+
+    /* USP bar */
+    .usp-bar { background: var(--secondary); color: rgba(255,255,255,.85); padding: 16px 0; }
+    .usp-inner { display: flex; justify-content: space-around; gap: 12px; flex-wrap: wrap; }
+    .usp-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+
+    /* Testimonials */
+    .testimonial-card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    .testimonial-card .stars { color: #f39c12; margin-bottom: 12px; }
+    .testimonial-card .author { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+    .testimonial-card .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); font-size: 18px; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="nav-brand">
+      <img src="/image/logo_1.jpeg" alt="Logo" onerror="this.style.display='none'"/>
+      NANA RAFF
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="/" class="active">Accueil</a>
+      <a href="/produits.html">Produits</a>
+      <a href="/services.html">Services</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/admin.html" id="nav-admin-link" style="color: var(--primary); font-weight:800;">Admin</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <button class="cart-btn" id="cart-open-btn" title="Mon panier">
+        🛒 <span class="cart-count" style="display:none">0</span>
+      </button>
+      <a href="/login.html" id="nav-login" class="btn btn-primary btn-sm">Connexion</a>
+      <div id="nav-user-menu" class="hidden" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-weight:600;font-size:14px;" id="nav-user-name"></span>
+        <button class="btn btn-ghost btn-sm" data-logout>Déconnexion</button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-content">
+    <div>
+      <div class="hero-badge">🌿 Naturel & Certifié Bio</div>
+      <h1>Votre allié minceur & bien-être</h1>
+      <p>Produits naturels de qualité premium, coaching personnalisé et conseils d'experts. Santé & beauté au naturel.</p>
+      <div class="hero-btns">
+        <a href="/produits.html" class="btn btn-primary btn-lg">Voir nos produits</a>
+        <a href="/services.html" class="btn btn-outline btn-lg" style="border-color:#fff;color:#fff;">Nos services</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">500+</div><div class="lbl">Clients satisfaits</div></div>
+        <div class="hero-stat"><div class="num">50+</div><div class="lbl">Produits</div></div>
+        <div class="hero-stat"><div class="num">4.8★</div><div class="lbl">Note moyenne</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-wrap">
+        <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=700" alt="Produits naturels"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USP BAR -->
+<div class="usp-bar">
+  <div class="container usp-inner">
+    <div class="usp-item">🚚 Livraison rapide Douala & Yaoundé</div>
+    <div class="usp-item">✅ Produits certifiés bio</div>
+    <div class="usp-item">💳 Paiement Mobile Money</div>
+    <div class="usp-item">↩️ Retour sous 7 jours</div>
+  </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<section class="section">
+  <div class="container">
+    <div class="flex-between mb-24">
+      <div>
+        <div class="section-title">Produits populaires</div>
+        <div class="section-sub">Nos bestsellers du moment</div>
+      </div>
+      <a href="/produits.html" class="btn btn-outline">Tout voir →</a>
+    </div>
+
+    <!-- Categories -->
+    <div class="cats" id="cats">
+      <div class="cat-pill active" data-cat="">
+        <span class="cat-icon">🌟</span> Tous
+      </div>
+      <div class="cat-pill" data-cat="thé">
+        <span class="cat-icon">🍵</span> Thés
+      </div>
+      <div class="cat-pill" data-cat="compléments">
+        <span class="cat-icon">💊</span> Compléments
+      </div>
+      <div class="cat-pill" data-cat="beauté">
+        <span class="cat-icon">✨</span> Beauté
+      </div>
+      <div class="cat-pill" data-cat="nutrition">
+        <span class="cat-icon">🥗</span> Nutrition
+      </div>
+      <div class="cat-pill" data-cat="accessoires">
+        <span class="cat-icon">🏃</span> Accessoires
+      </div>
+    </div>
+
+    <div id="products-grid" class="grid grid-4 mt-16">
+      <div class="page-loading" style="grid-column:1/-1">
+        <div class="spinner" style="border-color:rgba(39,174,96,.3);border-top-color:var(--primary);width:32px;height:32px;border-width:4px;"></div>
+        <div>Chargement des produits…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" style="background: #f8fdf9;">
+  <div class="container">
+    <div class="text-center mb-24">
+      <div class="section-title">Ce que disent nos clients</div>
+      <div class="section-sub">Plus de 500 avis vérifiés</div>
+    </div>
+    <div class="grid grid-3">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Le thé détox a vraiment changé ma routine matinale. Je me sens plus légère et pleine d'énergie !"</p>
+        <div class="author"><div class="avatar">M</div><div><strong>Marie K.</strong><div style="font-size:12px;color:var(--muted)">Cliente vérifiée</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Produits de qualité, livraison rapide à Douala. Le collagène marin est exceptionnel pour la peau !"</p>
+        <div class="author"><div class="avatar">S</div><div><strong>Sophie N.</strong><div style="font-size:12px;color:var(--muted)">Cliente vérifiée</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Très bon service client, réponse rapide. Je recommande vraiment NANA RAFF à toutes mes amies."</p>
+        <div class="author"><div class="avatar">A</div><div><strong>Ama D.</strong><div style="font-size:12px;color:var(--muted)">Cliente vérifiée</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>NANA RAFF</h4>
+        <p style="font-size:14px;line-height:1.7;">Votre boutique santé & beauté naturelle au Cameroun. Qualité, confiance et service premium.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;">
+          <a href="/produits.html">Produits</a>
+          <a href="/services.html">Services</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div style="font-size:14px;line-height:2;">
+          📍 Douala, Cameroun<br/>
+          📞 +237 6XX XXX XXX<br/>
+          📧 contact@nanaraff.com
+        </div>
+      </div>
+      <div>
+        <h4>Paiement</h4>
+        <div style="font-size:14px;line-height:2;">
+          📱 Orange Money<br/>
+          📱 MTN Mobile Money<br/>
+          💵 Paiement à la livraison
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2024 NANA RAFF – Tous droits réservés</div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h3>Mon panier (<span id="cart-item-count">0</span>)</h3>
+    <button id="cart-close-btn" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total</span><span id="cart-total-price">0 FCFA</span></div>
+    <div class="form-group">
+      <input type="text" class="form-control" id="promo-input" placeholder="Code promo (ex: BIENVENUE10)"/>
+    </div>
+    <button id="apply-promo" class="btn btn-ghost btn-sm btn-full mb-8">Appliquer le code</button>
+    <div id="promo-result" style="font-size:13px;margin-bottom:12px;"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="checkout-btn">Commander →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Finaliser la commande</h3>
+      <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+    </div>
+    <div id="checkout-content">
+      <div class="form-group"><label>Nom complet*</label><input type="text" class="form-control" id="order-name" placeholder="Votre nom"/></div>
+      <div class="form-group"><label>Téléphone*</label><input type="tel" class="form-control" id="order-phone" placeholder="+237 6XX XXX XXX"/></div>
+      <div class="form-group"><label>Email</label><input type="email" class="form-control" id="order-email" placeholder="votre@email.com"/></div>
+      <div class="form-group"><label>Adresse de livraison*</label><textarea class="form-control" id="order-address" rows="2" placeholder="Quartier, ville…"></textarea></div>
+      <div class="form-group">
+        <label>Mode de paiement*</label>
+        <select class="form-control" id="order-payment">
+          <option value="momo">MTN Mobile Money</option>
+          <option value="om">Orange Money</option>
+          <option value="cash">Paiement à la livraison</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Notes (optionnel)</label><input type="text" class="form-control" id="order-notes" placeholder="Instructions spéciales…"/></div>
+      <div id="order-summary" style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:16px;font-size:14px;"></div>
+      <div id="checkout-error" class="alert alert-error hidden"></div>
+      <button class="btn btn-primary btn-full btn-lg" id="place-order-btn">Confirmer la commande</button>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script>
+let currentCat = '';
+let appliedPromo = null;
+
+async function loadProducts(cat = '') {
+  const grid = document.getElementById('products-grid');
+  grid.innerHTML = '<div class="page-loading" style="grid-column:1/-1"><div style="font-size:32px;">⏳</div><div>Chargement…</div></div>';
+  try {
+    const qs = cat ? `?category=${encodeURIComponent(cat)}` : '';
+    const products = await apiFetch(`/products${qs}`);
+    if (!products.length) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="icon">📦</div><p>Aucun produit dans cette catégorie</p></div>';
+      return;
+    }
+    grid.innerHTML = products.slice(0, 8).map(p => `
+      <div class="product-card">
+        <div class="product-card-img">
+          <img src="${p.images?.[0] || 'https://via.placeholder.com/400x300?text=Produit'}" alt="${p.name}" loading="lazy"/>
+        </div>
+        <div class="product-card-body">
+          ${p.featured ? '<span class="featured-badge">⭐ Populaire</span>' : ''}
+          <div class="product-card-cat">${p.category || ''}</div>
+          <div class="product-card-name">${p.name}</div>
+          <div class="product-card-short">${p.short || ''}</div>
+          <div class="product-card-footer">
+            <div>
+              <div class="product-price">${formatPrice(p.price)}</div>
+              ${p.stock === 0 ? '<div style="font-size:12px;color:var(--danger);">Rupture de stock</div>' : `<div style="font-size:12px;color:var(--muted);">${p.stock} en stock</div>`}
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addToCart(${JSON.stringify(p).replace(/"/g,'&quot;')})" ${p.stock === 0 ? 'disabled' : ''}>
+              + Panier
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="icon">⚠️</div><p>Impossible de charger les produits</p></div>`;
+  }
+}
+
+function addToCart(p) { Cart.add(p); renderCart(); }
+
+function renderCart() {
+  const cart = Cart.get();
+  const list = document.getElementById('cart-items-list');
+  const countEl = document.getElementById('cart-item-count');
+  const totalEl = document.getElementById('cart-total-price');
+  countEl.textContent = Cart.count();
+  totalEl.textContent = formatPrice(Cart.total());
+  if (!cart.length) {
+    list.innerHTML = '<div class="empty"><div class="icon">🛒</div><p>Votre panier est vide</p></div>';
+    return;
+  }
+  list.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${item.image || 'https://via.placeholder.com/70?text=+'}" alt="${item.name}"/>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${formatPrice(item.price)}</div>
+        <div class="cart-qty">
+          <button onclick="Cart.setQty(${item.productId},${item.qty-1});renderCart()">−</button>
+          <span>${item.qty}</span>
+          <button onclick="Cart.setQty(${item.productId},${item.qty+1});renderCart()">+</button>
+          <button onclick="Cart.remove(${item.productId});renderCart()" style="margin-left:auto;background:none;border:none;color:var(--danger);font-size:16px;">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Promo
+document.getElementById('apply-promo')?.addEventListener('click', async () => {
+  const code = document.getElementById('promo-input').value.trim();
+  const resultEl = document.getElementById('promo-result');
+  if (!code) return;
+  try {
+    const res = await apiFetch('/promos/validate', { method: 'POST', body: JSON.stringify({ code, total: Cart.total() }) });
+    appliedPromo = res;
+    resultEl.innerHTML = `<span style="color:var(--primary)">✅ Réduction appliquée : -${formatPrice(res.discount)}</span>`;
+  } catch (e) {
+    appliedPromo = null;
+    resultEl.innerHTML = `<span style="color:var(--danger)">❌ ${e.message}</span>`;
+  }
+});
+
+// Checkout
+document.getElementById('checkout-btn')?.addEventListener('click', () => {
+  if (!Cart.count()) { toast('Votre panier est vide', 'error'); return; }
+  const user = Auth.getUser();
+  if (user) { document.getElementById('order-name').value = user.name; document.getElementById('order-email').value = user.email; }
+  const summary = document.getElementById('order-summary');
+  const cart = Cart.get();
+  summary.innerHTML = cart.map(i => `<div style="display:flex;justify-content:space-between;"><span>${i.name} x${i.qty}</span><span>${formatPrice(i.price*i.qty)}</span></div>`).join('') + `<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;font-weight:800;display:flex;justify-content:space-between;"><span>Total</span><span>${formatPrice(Cart.total())}</span></div>`;
+  openModal('checkout-modal');
+});
+
+document.getElementById('place-order-btn')?.addEventListener('click', async () => {
+  const btn = document.getElementById('place-order-btn');
+  const errEl = document.getElementById('checkout-error');
+  const name = document.getElementById('order-name').value.trim();
+  const phone = document.getElementById('order-phone').value.trim();
+  const address = document.getElementById('order-address').value.trim();
+  if (!name || !phone || !address) { errEl.textContent = 'Nom, téléphone et adresse sont requis.'; errEl.classList.remove('hidden'); return; }
+  errEl.classList.add('hidden');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> En cours…';
+  try {
+    const order = await apiFetch('/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        items: Cart.get().map(i => ({ productId: i.productId, qty: i.qty })),
+        customerName: name,
+        customerPhone: phone,
+        customerEmail: document.getElementById('order-email').value,
+        deliveryAddress: address,
+        paymentMethod: document.getElementById('order-payment').value,
+        notes: document.getElementById('order-notes').value,
+        promoCode: appliedPromo?.promo?.code
+      })
+    });
+    Cart.clear();
+    renderCart();
+    closeModal('checkout-modal');
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+    toast(`Commande #${order.order.id} confirmée ! Nous vous contacterons bientôt.`, 'success', 6000);
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Confirmer la commande';
+  }
+});
+
+// Cart open/close
+document.getElementById('cart-open-btn')?.addEventListener('click', () => { renderCart(); document.getElementById('cart-drawer').classList.add('open'); document.getElementById('cart-overlay').classList.add('open'); });
+document.getElementById('cart-close-btn')?.addEventListener('click', () => { document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').classList.remove('open'); });
+document.getElementById('cart-overlay')?.addEventListener('click', () => { document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').classList.remove('open'); });
+
+// Category filter
+document.querySelectorAll('.cat-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentCat = pill.dataset.cat;
+    loadProducts(currentCat);
+  });
+});
+
+loadProducts();
+</script>
+</body>
+</html>
