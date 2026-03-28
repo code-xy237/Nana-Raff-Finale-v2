@@ -53,7 +53,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 (async () => {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: false });
     console.log('✅ SQLite DB synced');
     app.listen(PORT, '0.0.0.0', () => console.log(`🚀 NANA RAFF running on port ${PORT}`));
   } catch (err) {

@@ -324,7 +324,17 @@
       <div class="form-group"><label>Prix (FCFA)*</label><input type="number" class="form-control" id="p-price" placeholder="5000" min="0"/></div>
       <div class="form-group"><label>Stock*</label><input type="number" class="form-control" id="p-stock" placeholder="50" min="0"/></div>
     </div>
-    <div class="form-group"><label>Image URL <span style="color:var(--muted);font-size:12px;">(URL d'une image en ligne)</span></label><input type="url" class="form-control" id="p-image" placeholder="https://…"/></div>
+    <div class="form-group">
+      <label>Image du produit</label>
+      <div id="upload-zone" style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;background:var(--bg);" onclick="document.getElementById('p-image-file').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor='var(--border)'">
+        <div id="upload-preview" style="display:none;margin-bottom:10px;"><img id="upload-preview-img" src="" style="max-height:140px;max-width:100%;border-radius:8px;object-fit:contain;"/></div>
+        <div id="upload-placeholder"><div style="font-size:32px;margin-bottom:6px;">📁</div><div style="font-weight:700;">Glisser une image ici</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">ou cliquer pour parcourir · JPG, PNG, WEBP · max 5 Mo</div></div>
+        <div id="upload-status" style="font-size:13px;margin-top:8px;color:var(--primary);"></div>
+      </div>
+      <input type="file" id="p-image-file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="handleImageFile(this.files[0])"/>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0;"><div style="flex:1;height:1px;background:var(--border);"></div><span style="font-size:12px;color:var(--muted);">ou entrer une URL</span><div style="flex:1;height:1px;background:var(--border);"></div></div>
+      <input type="url" class="form-control" id="p-image" placeholder="https://exemple.com/image.jpg" oninput="previewFromUrl(this.value)"/>
+    </div>
     <div class="form-group" style="display:flex;align-items:center;gap:10px;">
       <input type="checkbox" id="p-featured" style="width:18px;height:18px;accent-color:var(--primary);"/>
       <label for="p-featured" style="margin:0;cursor:pointer;">Produit en vedette (affiché en priorité)</label>
@@ -569,6 +579,66 @@ async function loadProducts() {
   } catch (e) { toast('Erreur: ' + e.message, 'error'); }
 }
 
+// ── Image upload helpers ──
+let uploadedImageUrl = null;
+
+function resetUploadZone() {
+  uploadedImageUrl = null;
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-placeholder').style.display = 'block';
+  document.getElementById('upload-status').textContent = '';
+  document.getElementById('upload-zone').style.borderColor = 'var(--border)';
+  document.getElementById('p-image-file').value = '';
+}
+
+function showUploadPreview(url) {
+  document.getElementById('upload-preview-img').src = url;
+  document.getElementById('upload-preview').style.display = 'block';
+  document.getElementById('upload-placeholder').style.display = 'none';
+  document.getElementById('upload-zone').style.borderColor = 'var(--primary)';
+}
+
+function previewFromUrl(url) {
+  if (!url) { resetUploadZone(); return; }
+  showUploadPreview(url);
+  uploadedImageUrl = url;
+}
+
+async function handleImageFile(file) {
+  if (!file) return;
+  const status = document.getElementById('upload-status');
+  status.innerHTML = '<span style="color:var(--accent);">⏳ Upload en cours…</span>';
+  // Show local preview immediately
+  const reader = new FileReader();
+  reader.onload = e => showUploadPreview(e.target.result);
+  reader.readAsDataURL(file);
+  // Upload to server
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch('/api/products/upload-image', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + Auth.getToken() },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.msg || 'Erreur upload');
+    uploadedImageUrl = data.url;
+    document.getElementById('p-image').value = data.url;
+    status.innerHTML = '<span style="color:var(--primary);">✅ Image uploadée : ' + file.name + '</span>';
+  } catch (e) {
+    status.innerHTML = '<span style="color:var(--danger);">❌ ' + e.message + '</span>';
+    uploadedImageUrl = null;
+  }
+}
+
+function handleImageDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').style.borderColor = 'var(--border)';
+  const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleImageFile(file);
+}
+
 function openProductModal(p = null) {
   editingProductId = p?.id || null;
   document.getElementById('product-modal-title').textContent = p ? 'Modifier le produit' : 'Nouveau produit';
@@ -578,10 +648,17 @@ function openProductModal(p = null) {
   document.getElementById('p-desc').value = p?.description || '';
   document.getElementById('p-price').value = p?.price || '';
   document.getElementById('p-stock').value = p?.stock ?? '';
-  document.getElementById('p-image').value = p?.images?.[0] || '';
   document.getElementById('p-featured').checked = !!p?.featured;
   document.getElementById('p-active').checked = p?.active !== false;
   document.getElementById('product-error').classList.add('hidden');
+  resetUploadZone();
+  const existingImg = p?.images?.[0] || '';
+  document.getElementById('p-image').value = existingImg;
+  if (existingImg) {
+    showUploadPreview(existingImg);
+    uploadedImageUrl = existingImg;
+    document.getElementById('upload-status').innerHTML = '<span style="color:var(--muted);font-size:12px;">Image actuelle — remplacer si besoin</span>';
+  }
   openModal('product-modal');
 }
 
@@ -595,7 +672,7 @@ document.getElementById('save-product-btn').addEventListener('click', async () =
   errEl.classList.add('hidden');
   const btn = document.getElementById('save-product-btn');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const imageUrl = document.getElementById('p-image').value.trim();
+  const imageUrl = uploadedImageUrl || document.getElementById('p-image').value.trim();
   const data = {
     name, price, stock: parseInt(document.getElementById('p-stock').value) || 0,
     category: document.getElementById('p-cat').value,
