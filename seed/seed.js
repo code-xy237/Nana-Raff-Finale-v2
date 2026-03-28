@@ -2,7 +2,7 @@ require('dotenv').config();
 const { sequelize, User, Product, Promo } = require('../models');
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@nanaraff.com';
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Shalom123@';
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'Admin@2024!';
 
 (async () => {
   await sequelize.sync({ force: true });
