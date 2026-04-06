@@ -130,6 +130,17 @@
     <div class="nav-section-label">Administration</div>
     <button class="nav-item" data-panel="users"><span class="icon">👥</span> Utilisateurs</button>
     <button class="nav-item" data-panel="reviews"><span class="icon">⭐</span> Avis clients</button>
+    <!-- ── SIDEBAR : nouvelles entrées de navigation ── -->
+    <div class="nav-section-label">Gestion</div>
+    <button class="nav-item" data-panel="invoices">
+      <span class="icon">🧾</span> Factures
+    </button>
+    <button class="nav-item" data-panel="stock">
+      <span class="icon">📦</span> Stock
+    </button>
+    <button class="nav-item" data-panel="accounting">
+      <span class="icon">📊</span> Comptabilité
+    </button>
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-user">
@@ -283,6 +294,197 @@
       </div>
     </div>
 
+    <!-- ══ PANEL : FACTURES ══════════════════════════════════════════════════════ -->
+    <div id="panel-invoices" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;color:var(--primary)">🧾 Factures & Reçus</h2>
+          <p style="color:#888;font-size:13px;margin-top:3px">Consultez et imprimez les factures de chaque commande</p>
+        </div>
+      </div>
+
+      <div class="card" style="overflow-x:auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <span id="invoices-info" style="font-size:13px;color:#888"></span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead>
+            <tr style="background:var(--primary);color:#fff">
+              <th style="padding:10px 14px;text-align:left">Facture</th>
+              <th style="padding:10px 14px;text-align:left">Client</th>
+              <th style="padding:10px 14px;text-align:left">Téléphone</th>
+              <th style="padding:10px 14px;text-align:right">Montant HT</th>
+              <th style="padding:10px 14px;text-align:right">TVA</th>
+              <th style="padding:10px 14px;text-align:right">Total TTC</th>
+              <th style="padding:10px 14px;text-align:center">Statut</th>
+              <th style="padding:10px 14px;text-align:left">Date</th>
+              <th style="padding:10px 14px;text-align:center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-body">
+            <tr><td colspan="9" class="text-center text-muted" style="padding:30px">Chargement…</td></tr>
+          </tbody>
+        </table>
+        <div id="invoices-pages" style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL : STOCK ═════════════════════════════════════════════════════════ -->
+    <div id="panel-stock" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;color:var(--primary)">📦 Gestion du Stock</h2>
+          <p style="color:#888;font-size:13px;margin-top:3px">Niveaux de stock en temps réel par produit</p>
+        </div>
+        <button class="btn btn-primary" onclick="exportStock()">⬇️ Exporter Excel</button>
+      </div>
+
+      <!-- KPIs stock -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px">
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-total" style="font-size:28px;font-weight:900;color:var(--primary)">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Total produits</div>
+        </div>
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-rupture" style="font-size:28px;font-weight:900;color:#ef4444">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">En rupture</div>
+        </div>
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-faible" style="font-size:28px;font-weight:900;color:#f59e0b">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Stock faible (≤ 5)</div>
+        </div>
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-ok" style="font-size:28px;font-weight:900;color:#22c55e">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Disponibles</div>
+        </div>
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-unites" style="font-size:28px;font-weight:900;color:var(--primary)">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Unités en stock</div>
+        </div>
+        <div class="card" style="text-align:center;padding:18px 12px">
+          <div id="stock-kpi-valeur" style="font-size:20px;font-weight:900;color:var(--primary)">—</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Valeur du stock</div>
+        </div>
+      </div>
+
+      <!-- Filtres -->
+      <div class="card" style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <select id="stock-filter" style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:13px" onchange="filterStock()">
+          <option value="all">Tous les produits</option>
+          <option value="rupture">En rupture</option>
+          <option value="faible">Stock faible</option>
+          <option value="ok">Stock OK</option>
+        </select>
+        <input id="stock-search" type="text" placeholder="🔍 Rechercher un produit…" style="padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;flex:1;min-width:200px" oninput="filterStock()">
+      </div>
+
+      <!-- Tableau stock -->
+      <div class="card" style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead>
+            <tr style="background:var(--primary);color:#fff">
+              <th style="padding:10px 14px;text-align:left">Produit</th>
+              <th style="padding:10px 14px;text-align:left">Catégorie</th>
+              <th style="padding:10px 14px;text-align:left">Marque</th>
+              <th style="padding:10px 14px;text-align:right">Prix</th>
+              <th style="padding:10px 14px;text-align:center">Stock actuel</th>
+              <th style="padding:10px 14px;text-align:center">Statut</th>
+              <th style="padding:10px 14px;text-align:center">Modifier</th>
+            </tr>
+          </thead>
+          <tbody id="stock-body">
+            <tr><td colspan="7" class="text-center text-muted" style="padding:30px">Chargement…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PANEL : COMPTABILITÉ ══════════════════════════════════════════════════ -->
+    <div id="panel-accounting" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;color:var(--primary)">📊 Comptabilité</h2>
+          <p style="color:#888;font-size:13px;margin-top:3px">Chiffre d'affaires, TVA collectée, ventilation par mode de paiement</p>
+        </div>
+        <button class="btn btn-primary" id="btn-export-accounting" onclick="exportAccounting()">⬇️ Exporter Excel</button>
+      </div>
+
+      <!-- Filtres période -->
+      <div class="card" style="margin-bottom:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:13px;font-weight:600;color:var(--primary)">Période :</label>
+        <input type="date" id="acc-from" style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:13px">
+        <span style="color:#888">→</span>
+        <input type="date" id="acc-to"   style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:13px">
+        <button class="btn btn-primary btn-sm" onclick="loadAccounting()">Calculer</button>
+        <button class="btn btn-ghost  btn-sm" onclick="clearAccPeriode()">Tout afficher</button>
+      </div>
+
+      <!-- KPIs comptables -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px">
+        <div class="card" style="text-align:center;padding:20px 12px;border-top:3px solid var(--primary)">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Commandes</div>
+          <div id="acc-nb" style="font-size:30px;font-weight:900;color:var(--primary)">—</div>
+        </div>
+        <div class="card" style="text-align:center;padding:20px 12px;border-top:3px solid #22c55e">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">CA Hors Taxe</div>
+          <div id="acc-ht" style="font-size:22px;font-weight:900;color:#15803d">—</div>
+        </div>
+        <div class="card" style="text-align:center;padding:20px 12px;border-top:3px solid #f59e0b">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">TVA collectée (19,25%)</div>
+          <div id="acc-tva" style="font-size:22px;font-weight:900;color:#d97706">—</div>
+        </div>
+        <div class="card" style="text-align:center;padding:20px 12px;border-top:3px solid #3b82f6">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">CA TTC (Prix de vente)</div>
+          <div id="acc-ttc" style="font-size:22px;font-weight:900;color:#1d4ed8">—</div>
+        </div>
+        <div class="card" style="text-align:center;padding:20px 12px;border-top:3px solid #8b5cf6">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Panier moyen</div>
+          <div id="acc-panier" style="font-size:22px;font-weight:900;color:#7c3aed">—</div>
+        </div>
+      </div>
+
+      <!-- Note TVA -->
+      <div style="background:#fff9e6;border:1.5px solid #fcd34d;border-radius:10px;padding:14px 18px;margin-bottom:22px;font-size:13px;color:#92400e">
+        <strong>⚠️ Note fiscale :</strong> La TVA au taux de 19,25% (Cameroun) doit être reversée à la Direction Générale des Impôts (DGI). 
+        Le montant indiqué est la TVA <em>collectée</em> auprès de vos clients.
+      </div>
+
+      <!-- Deux colonnes : paiement + top produits -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px" class="acc-grid">
+        <!-- Ventilation paiement -->
+        <div class="card">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:14px;color:var(--primary)">💳 Par mode de paiement</h3>
+          <div id="acc-paiement">—</div>
+        </div>
+        <!-- Top produits -->
+        <div class="card">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:14px;color:var(--primary)">🏆 Top 10 produits</h3>
+          <div id="acc-top10" style="font-size:13px">—</div>
+        </div>
+      </div>
+
+      <!-- Évolution mensuelle -->
+      <div class="card">
+        <h3 style="font-size:15px;font-weight:800;margin-bottom:14px;color:var(--primary)">📅 Évolution mensuelle</h3>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--primary);color:#fff">
+                <th style="padding:9px 14px;text-align:left">Mois</th>
+                <th style="padding:9px 14px;text-align:center">Commandes</th>
+                <th style="padding:9px 14px;text-align:right">HT</th>
+                <th style="padding:9px 14px;text-align:right">TVA</th>
+                <th style="padding:9px 14px;text-align:right">TTC</th>
+              </tr>
+            </thead>
+            <tbody id="acc-mois">
+              <tr><td colspan="5" class="text-center text-muted" style="padding:20px">Chargez un rapport…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /admin-content -->
 </div><!-- /admin-main -->
 
@@ -394,7 +596,7 @@ if (user) {
 
 // Navigation
 let currentPanel = 'dashboard';
-const panelTitles = { dashboard: 'Vue d\'ensemble', orders: 'Commandes', products: 'Produits', promos: 'Promotions', users: 'Utilisateurs', reviews: 'Avis clients' };
+const panelTitles = { dashboard: 'Vue d\'ensemble', orders: 'Commandes', products: 'Produits', promos: 'Promotions', users: 'Utilisateurs', reviews: 'Avis clients', invoices: 'Factures & Reçus', stock: 'Gestion du stock', accounting: 'Comptabilité' };
 
 document.querySelectorAll('[data-panel]').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -416,6 +618,9 @@ function loadPanel(p) {
   else if (p === 'products') loadProducts();
   else if (p === 'promos') loadPromos();
   else if (p === 'users') loadUsers();
+  else if (p === 'invoices')   loadInvoices();
+  else if (p === 'stock')      loadStock();
+  else if (p === 'accounting') loadAccounting();
 }
 
 // Mobile sidebar
@@ -540,6 +745,12 @@ async function viewOrder(id) {
         <select class="form-control" style="width:auto;" onchange="updateOrderStatus(${o.id},this.value);closeModal('order-modal')">
           ${['pending','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${s===o.status?'selected':''}>${statusLabel(s)}</option>`).join('')}
         </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <a href="/api/invoices/${o.id}/pdf?token=${Auth.getToken()}" target="_blank" 
+          class="btn btn-primary">🧾 Voir la facture</a>
+        <a href="/api/invoices/${o.id}/excel?token=${Auth.getToken()}" 
+          class="btn btn-ghost">📊 Exporter Excel</a>
       </div>
     `;
     openModal('order-modal');
@@ -807,8 +1018,10 @@ async function loadUsers(page = 1) {
         <td style="font-size:13px;">${formatDate(u.createdAt)}</td>
         <td>
           <div class="action-btns">
-            ${u.role !== 'admin' ? `<button class="btn btn-ghost btn-sm" onclick="toggleUser(${u.id},${u.active})">${u.active?'⏸ Désactiver':'▶ Activer'}</button>` : ''}
-            ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id},'${u.name.replace(/'/g,'\\\'')}')" >🗑</button>` : '<span class="text-muted" style="font-size:12px;">Admin protégé</span>'}
+            <button class="btn btn-ghost btn-sm" onclick="editUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">✏️</button>
+            <button class="btn btn-ghost btn-sm" onclick="resetUserPassword(${u.id},'${u.name.replace(/'/g,"\\'")}')">🔑</button>
+            ${u.role !== 'admin' ? `<button class="btn btn-ghost btn-sm" onclick="toggleUser(${u.id},${u.active})">${u.active?'⏸':'▶'}</button>` : ''}
+            ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id},'${u.name.replace(/'/g,"\\'")}')">🗑</button>` : '<span class="text-muted" style="font-size:12px;">Admin</span>'}
           </div>
         </td>
       </tr>
@@ -826,9 +1039,31 @@ async function toggleUser(id, active) {
 }
 
 async function deleteUser(id, name) {
-  if (!confirm(`Supprimer l'utilisateur "${name}" ?`)) return;
+  if (!confirm(`Supprimer l'utilisateur "${name}" ?\nSes commandes seront conservées.`)) return;
   try { await apiFetch(`/users/${id}`, { method: 'DELETE' }); toast('Utilisateur supprimé', 'success'); loadUsers(usersPage); }
   catch (e) { toast(e.message, 'error'); }
+}
+
+async function resetUserPassword(id, name) {
+  const pwd = prompt(`Nouveau mot de passe pour "${name}" (min. 6 caractères) :`);
+  if (!pwd) return;
+  if (pwd.length < 6) { toast('Mot de passe trop court (min 6 caractères)', 'error'); return; }
+  try {
+    await apiFetch(`/users/${id}/reset-password`, { method: 'POST', body: JSON.stringify({ newPassword: pwd }) });
+    toast(`Mot de passe de "${name}" réinitialisé ✅`, 'success');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function editUser(u) {
+  const newName  = prompt('Nom :', u.name);
+  if (newName === null) return;
+  const newPhone = prompt('Téléphone :', u.phone || '');
+  if (newPhone === null) return;
+  try {
+    await apiFetch(`/users/${u.id}`, { method: 'PUT', body: JSON.stringify({ name: newName || u.name, phone: newPhone }) });
+    toast('Utilisateur mis à jour ✅', 'success');
+    loadUsers(usersPage);
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 // ═══════════ HELPERS ═══════════
@@ -853,6 +1088,238 @@ let searchTimers = {};
 });
 document.getElementById('order-status-filter')?.addEventListener('change', () => loadOrders());
 document.getElementById('user-role-filter')?.addEventListener('change', () => loadUsers());
+
+// ═══════════════════ FACTURES ═══════════════════════════════════════════════
+async function loadInvoices(page = 1) {
+  try {
+    const { invoices, total, pages } = await apiFetch(`/invoices/list?page=${page}&limit=20`);
+    document.getElementById('invoices-info').textContent = `${total} facture${total > 1 ? 's' : ''}`;
+
+    document.getElementById('invoices-body').innerHTML = invoices.length
+      ? invoices.map(inv => `
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px"><strong>${inv.invoiceNum}</strong></td>
+          <td style="padding:10px 14px">${inv.customerName || '—'}</td>
+          <td style="padding:10px 14px">${inv.customerPhone || '—'}</td>
+          <td style="padding:10px 14px;text-align:right">${formatPrice(inv.ht)}</td>
+          <td style="padding:10px 14px;text-align:right;color:#d97706">${formatPrice(inv.tva)}</td>
+          <td style="padding:10px 14px;text-align:right;font-weight:700;color:var(--primary)">${formatPrice(inv.ttc)}</td>
+          <td style="padding:10px 14px;text-align:center"><span class="status status-${inv.status}">${statusLabel(inv.status)}</span></td>
+          <td style="padding:10px 14px">${formatDate(inv.createdAt)}</td>
+          <td style="padding:10px 14px;text-align:center">
+            <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+              <a href="/api/invoices/${inv.id}/pdf?token=${Auth.getToken()}" target="_blank" 
+                 style="background:var(--primary);color:#fff;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">
+                🧾 Imprimer
+              </a>
+              <a href="/api/invoices/${inv.id}/excel?token=${Auth.getToken()}"
+                 style="background:#1d4ed8;color:#fff;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">
+                📊 Excel
+              </a>
+            </div>
+          </td>
+        </tr>`).join('')
+      : '<tr><td colspan="9" class="text-center text-muted" style="padding:30px">Aucune facture</td></tr>';
+
+    renderPages('invoices-pages', pages, page, loadInvoices);
+  } catch (e) { toast('Erreur factures : ' + e.message, 'error'); }
+}
+
+// ═══════════════════ STOCK ══════════════════════════════════════════════════
+let allProducts = [];
+
+async function loadStock() {
+  try {
+    const { products, stats } = await apiFetch('/stock');
+    allProducts = products;
+
+    document.getElementById('stock-kpi-total').textContent   = stats.totalProduits;
+    document.getElementById('stock-kpi-rupture').textContent = stats.rupture;
+    document.getElementById('stock-kpi-faible').textContent  = stats.faible;
+    document.getElementById('stock-kpi-ok').textContent      = stats.ok;
+    document.getElementById('stock-kpi-unites').textContent  = stats.totalUnites;
+    document.getElementById('stock-kpi-valeur').textContent  = formatPrice(stats.valeurTotale);
+
+    renderStockTable(products);
+  } catch (e) { toast('Erreur stock : ' + e.message, 'error'); }
+}
+
+function renderStockTable(products) {
+  const tbody = document.getElementById('stock-body');
+  if (!products.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding:30px">Aucun produit</td></tr>';
+    return;
+  }
+  tbody.innerHTML = products.map(p => {
+    const lvl = p.stock === 0 ? 'rupture' : p.stock <= 5 ? 'faible' : 'ok';
+    const colors = {
+      rupture: { bg: '#fee2e2', color: '#b91c1c', label: '🔴 Rupture' },
+      faible:  { bg: '#fef9c3', color: '#92400e', label: '🟡 Faible' },
+      ok:      { bg: '#d1fae5', color: '#065f46', label: '🟢 OK' },
+    };
+    const c = colors[lvl];
+    return `
+      <tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:10px 14px;font-weight:600">${p.name}</td>
+        <td style="padding:10px 14px;color:#666">${p.category || '—'}</td>
+        <td style="padding:10px 14px;color:#666">${p.brand || '—'}</td>
+        <td style="padding:10px 14px;text-align:right">${formatPrice(p.price)}</td>
+        <td style="padding:10px 14px;text-align:center;font-size:20px;font-weight:900;color:${lvl==='rupture'?'#ef4444':lvl==='faible'?'#f59e0b':'var(--primary)'}">
+          ${p.stock}
+        </td>
+        <td style="padding:10px 14px;text-align:center">
+          <span style="background:${c.bg};color:${c.color};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">${c.label}</span>
+        </td>
+        <td style="padding:10px 14px;text-align:center">
+          <button class="btn btn-ghost btn-sm" onclick="openStockModal(${p.id}, '${p.name.replace(/'/g,"\\'")}', ${p.stock})">✏️ Modifier</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function filterStock() {
+  const filtre = document.getElementById('stock-filter').value;
+  const query  = document.getElementById('stock-search').value.toLowerCase();
+  let result = allProducts;
+  if (filtre === 'rupture') result = result.filter(p => p.stock === 0);
+  if (filtre === 'faible')  result = result.filter(p => p.stock > 0 && p.stock <= 5);
+  if (filtre === 'ok')      result = result.filter(p => p.stock > 5);
+  if (query) result = result.filter(p => p.name.toLowerCase().includes(query));
+  renderStockTable(result);
+}
+
+function exportStock() {
+  window.open('/api/stock/export?token=' + Auth.getToken(), '_blank');
+}
+
+function openStockModal(id, name, currentStock) {
+  const modal = document.getElementById('modal');
+  const content = document.getElementById('order-modal-content');
+  document.getElementById('order-modal-id').textContent = `Stock : ${name}`;
+  content.innerHTML = `
+    <p style="margin-bottom:14px;color:#555">Stock actuel : <strong style="font-size:18px;color:var(--primary)">${currentStock}</strong> unités</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Opération</label>
+        <select id="stock-op" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px">
+          <option value="set">Définir (remplacer)</option>
+          <option value="add">Ajouter (+)</option>
+          <option value="subtract">Retirer (-)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Quantité</label>
+        <input id="stock-qty" type="number" min="0" value="${currentStock}"
+          style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:16px;font-weight:700">
+      </div>
+      <button class="btn btn-primary" onclick="saveStock(${id})">💾 Enregistrer</button>
+    </div>`;
+  modal.classList.add('open');
+}
+
+async function saveStock(id) {
+  const op  = document.getElementById('stock-op').value;
+  const qty = parseInt(document.getElementById('stock-qty').value);
+  if (isNaN(qty) || qty < 0) { toast('Quantité invalide', 'error'); return; }
+  try {
+    await apiFetch(`/stock/${id}`, { method: 'PATCH', body: JSON.stringify({ stock: qty, operation: op }) });
+    document.getElementById('modal').classList.remove('open');
+    toast('Stock mis à jour ✅', 'success');
+    loadStock();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ═══════════════════ COMPTABILITÉ ═══════════════════════════════════════════
+async function loadAccounting() {
+  const from = document.getElementById('acc-from').value;
+  const to   = document.getElementById('acc-to').value;
+  let url = '/accounting/report';
+  if (from && to) url += `?from=${from}&to=${to}`;
+
+  try {
+    const data = await apiFetch(url);
+    const s = data.synthese;
+
+    document.getElementById('acc-nb').textContent     = s.nbCommandes;
+    document.getElementById('acc-ht').textContent     = formatPrice(s.totalHT);
+    document.getElementById('acc-tva').textContent    = formatPrice(s.totalTVA);
+    document.getElementById('acc-ttc').textContent    = formatPrice(s.totalTTC);
+    document.getElementById('acc-panier').textContent = formatPrice(s.panierMoyen);
+
+    // Ventilation paiement
+    const pmEntries = Object.entries(data.parPaiement);
+    document.getElementById('acc-paiement').innerHTML = pmEntries.length
+      ? pmEntries.map(([pm, d]) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <div>
+            <strong>${payLabelLocal(pm)}</strong>
+            <span style="color:#888;margin-left:6px">(${d.nb} cmd)</span>
+          </div>
+          <span style="font-weight:700;color:var(--primary)">${formatPrice(d.ttc)}</span>
+        </div>`).join('')
+      : '<p class="text-muted">Aucune donnée</p>';
+
+    // Top 10 produits
+    document.getElementById('acc-top10').innerHTML = data.top10Produits.length
+      ? data.top10Produits.map((p, i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="background:${i===0?'#fef9c3':i<3?'#f3f4f6':'#fff'};color:${i===0?'#92400e':'#555'};
+              width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">
+              ${i + 1}
+            </span>
+            <span>${p.nom}</span>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--primary)">${formatPrice(p.ttc)}</div>
+            <div style="font-size:11px;color:#888">${p.qte} unités</div>
+          </div>
+        </div>`).join('')
+      : '<p class="text-muted">Aucune vente</p>';
+
+    // Évolution mensuelle
+    const moisEntries = Object.entries(data.parMois);
+    document.getElementById('acc-mois').innerHTML = moisEntries.length
+      ? moisEntries.map(([mois, d], i) => `
+        <tr style="border-bottom:1px solid var(--border);${i%2===0?'background:#f9fafb':''}">
+          <td style="padding:8px 14px;font-weight:600">${mois}</td>
+          <td style="padding:8px 14px;text-align:center">${d.nb}</td>
+          <td style="padding:8px 14px;text-align:right">${formatPrice(d.ht)}</td>
+          <td style="padding:8px 14px;text-align:right;color:#d97706">${formatPrice(d.tva)}</td>
+          <td style="padding:8px 14px;text-align:right;font-weight:700;color:var(--primary)">${formatPrice(d.ttc)}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="5" class="text-center text-muted" style="padding:20px">Aucune donnée pour cette période</td></tr>';
+
+  } catch (e) { toast('Erreur comptabilité : ' + e.message, 'error'); }
+}
+
+function clearAccPeriode() {
+  document.getElementById('acc-from').value = '';
+  document.getElementById('acc-to').value   = '';
+  loadAccounting();
+}
+
+function exportAccounting() {
+  const from = document.getElementById('acc-from').value;
+  const to   = document.getElementById('acc-to').value;
+  let url = '/api/accounting/export';
+  if (from && to) url += `?from=${from}&to=${to}`;
+  window.open(url + (url.includes('?') ? '&' : '?') + 'token=' + Auth.getToken(), '_blank');
+}
+
+function payLabelLocal(m) {
+  const map = { cash:'Paiement livraison', orange_money:'Orange Money', mtn_momo:'MTN MoMo' };
+  return map[m] || m;
+}
+
+// Style responsive pour la grille comptabilité sur mobile
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @media(max-width:768px){
+    .acc-grid{grid-template-columns:1fr!important}
+  }
+`;
+document.head.appendChild(styleEl);
 
 // Initial load
 loadDashboard();

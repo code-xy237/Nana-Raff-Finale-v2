@@ -16,31 +16,28 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 
-// Static files (frontend served from backend/public)
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/products', require('./routes/products'));
-app.use('/api/reviews', require('./routes/reviews'));
-app.use('/api/orders', require('./routes/orders'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/promos', require('./routes/promos'));
+app.use('/api/auth',       require('./routes/auth'));
+app.use('/api/products',   require('./routes/products'));
+app.use('/api/reviews',    require('./routes/reviews'));
+app.use('/api/orders',     require('./routes/orders'));
+app.use('/api/users',      require('./routes/users'));
+app.use('/api/promos',     require('./routes/promos'));
+app.use('/api/invoices',   require('./routes/invoices'));
+app.use('/api/stock',      require('./routes/stock'));       // AJOUTÉ
+app.use('/api/accounting', require('./routes/accounting')); // AJOUTÉ
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV }));
 
 // Webhooks Mobile Money
-app.post('/webhook/om/notify', (req, res) => {
-  console.log('[OM webhook]', req.body);
-  res.json({ ok: true });
-});
-app.post('/webhook/momo/notify', (req, res) => {
-  console.log('[MoMo webhook]', req.body);
-  res.json({ ok: true });
-});
+app.post('/webhook/om/notify',   (req, res) => { console.log('[OM webhook]', req.body); res.json({ ok: true }); });
+app.post('/webhook/momo/notify', (req, res) => { console.log('[MoMo webhook]', req.body); res.json({ ok: true }); });
 
-// SPA fallback - serve index.html for all non-API routes
+// SPA fallback
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -49,14 +46,12 @@ app.get('*', (req, res) => {
 
 app.use(errorHandler);
 
-// Sync DB and start
 const PORT = process.env.PORT || 4000;
 (async () => {
   try {
-    await sequelize.sync({ alter: false });
+    await sequelize.sync({ alter: true }); // alter:true pour appliquer les nouveaux champs
     console.log('✅ SQLite DB synced');
 
-    // Auto-seed admin if not present (critical for Railway/Render ephemeral FS)
     const { User } = require('./models');
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@nanaraff.com';
     const adminPass  = process.env.ADMIN_PASSWORD || 'Admin@2024!';
